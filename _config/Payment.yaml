@@ -1,0 +1,6 @@
+name: Payment
+---
+
+SilverStripe\Control\Director:
+  rules:
+    'payment//$MethodName/$Action/$ID': 'payment\PaymentProcessor_GatewayHosted'
