@@ -22,8 +22,8 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.2",
-		"silverstripe/cms": "3.*",
-		"silverstripe/framework": "3.*"
+		"php": ">=7.1",
+		"silverstripe/cms": "4.*",
+		"silverstripe/framework": "4.*"
 	}
 }
