@@ -1,12 +1,10 @@
 # SilverStripe Payment Module
 
 ## Maintainer Contacts
-*  [Ryan Dao](https://github.com/ryandao)
-*  [Frank Mullenger](https://github.com/frankmullenger)
-*  [Jeremy Shipman](https://github.com/jedateach)
+*  [Jonathan Alpers](https://github.com/sreplaj)
 
 ## Requirements
-* SilverStripe 3.*
+* SilverStripe 4.*
 
 ## Documentation
 
