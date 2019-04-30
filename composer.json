@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/payment",
+	"name": "dia-nz/payment",
 	"description": "SilverStripe Payment Module",
 	"type": "silverstripe-module",
 	"license": "BSD-3-Clause",
