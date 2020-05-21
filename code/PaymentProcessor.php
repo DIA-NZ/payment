@@ -278,6 +278,14 @@ class PaymentProcessor_GatewayHosted extends PaymentProcessor {
 				$this->payment->ID
 		));
 
+		// Set the callback link for FPRN
+		$this->gateway->callbackURL = Director::absoluteURL(Controller::join_links(
+				$this->link(),
+				'fprn',
+				$this->methodName,
+				$this->payment->ID
+		));
+
 		// Send a request to the gateway
 		$result = $this->gateway->process($this->paymentData);
 
@@ -371,4 +379,65 @@ class PaymentProcessor_GatewayHosted extends PaymentProcessor {
 		// Do redirection
 		$this->doRedirect();
 	}
+
+
+    public function fprn($request) {
+
+        // Do a final ProcessResponse request to get the transaction outcome details
+		$data = $request->getVars();
+		$result = $request->getVar('result');
+        $processor = PaymentFactory::factory('PaymentExpressPxPay');
+		
+		//Construct the request to check the payment status
+		$request = new PxPayLookupRequest();
+		$request->setResponse($result);
+
+		//Get encrypted URL from DPS to redirect the user to
+		$request_string = $processor->makeCheckRequest($request, $data);
+
+		//Obtain output XML
+		$response = new MifMessage($request_string);
+
+        $TxnID = $response->get_element_text('TxnId');
+        
+		//Parse output XML
+		$success = $response->get_element_text('Success');
+
+		if ($success && is_numeric($success) && $success > 0) {
+            // update payment and permit
+            $payment = Payment::get()->filter(array(
+                'TxnID' => $TxnID
+            ))->first();
+
+            $permit = Permit::get()->filter(array(
+                'UUID' => $payment->Reference
+            ))->first();
+
+            if (!$permit->SentToCustomer) {
+
+                $payment->Status = PAYMENT::SUCCESS;
+                $payment->write();
+
+                $generationService = new PermitJPGGenerationService();
+                $generationService->generateJPG($permit);
+
+                $permitDeliveryService = new PermitDeliveryService();
+                $permitDeliveryService->send($permit, $generationService->getJPGPath($permit));
+
+                $generationService->removeJPGPermit($permit);
+
+                $permit->SentToCustomer = true;
+                $permit->PaymentID = $payment->ID;
+                $permit->write();
+            }
+    
+            if ($permit->SendPaperCopy) {
+                $permit->sendPaperCopyNotification();
+            }
+
+        } else {
+            // will retry up to 6 times
+        }
+
+    }
 }

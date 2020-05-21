@@ -197,6 +197,13 @@ class PaymentGateway_GatewayHosted extends PaymentGateway {
 	 * @var String
 	 */
 	public $cancelURL;
+
+	/**
+	 * The link to call for FPRN after processing payment (for gateway-hosted payments only)
+	 *
+	 * @var String
+	 */
+	public $callbackURL;
 	
 	/**
 	 * Check the payment using gateway lookup API or request
