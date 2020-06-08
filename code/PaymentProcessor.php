@@ -386,14 +386,16 @@ class PaymentProcessor_GatewayHosted extends PaymentProcessor {
         // Do a final ProcessResponse request to get the transaction outcome details
 		$data = $request->getVars();
 		$result = $request->getVar('result');
-        $processor = PaymentFactory::factory('PaymentExpressPxPay');
-		
+        
 		//Construct the request to check the payment status
 		$request = new PxPayLookupRequest();
 		$request->setResponse($result);
 
+		// Reconstruct the gateway object
+		$this->gateway = PaymentFactory::get_gateway('PaymentExpressPxPay');
+
 		//Get encrypted URL from DPS to redirect the user to
-		$request_string = $processor->makeCheckRequest($request, $data);
+		$request_string = $this->gateway->makeCheckRequest($request, $data);
 
 		//Obtain output XML
 		$response = new MifMessage($request_string);
