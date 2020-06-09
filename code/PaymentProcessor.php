@@ -279,7 +279,12 @@ class PaymentProcessor_GatewayHosted extends PaymentProcessor {
 		));
 
 		// Set the callback link for FPRN
-		$this->gateway->callbackURL = Director::absoluteURL('home/fprn');
+		$this->gateway->callbackURL = Director::absoluteURL(Controller::join_links(
+			$this->link(),
+			'home',
+			'fprn',
+			$this->payment->ID
+		));
 
 		// Send a request to the gateway
 		$result = $this->gateway->process($this->paymentData);
